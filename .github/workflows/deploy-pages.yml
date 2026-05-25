@@ -41,6 +41,9 @@ jobs:
           VITE_STRIPE_LINK_FULL_REPORT: ${{ secrets.VITE_STRIPE_LINK_FULL_REPORT }}
           VITE_STRIPE_LINK_RADAR_BOOST: ${{ secrets.VITE_STRIPE_LINK_RADAR_BOOST }}
 
+      - name: Add SPA fallback
+        run: cp dist/index.html dist/404.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

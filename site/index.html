@@ -1,179 +1,37 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#020617" />
-    <title>Al-Muraqib — Social Radar</title>
-    <style>
-      :root {
-        --midnight: #020617;
-        --panel: #020817;
-        --panel2: #0f172a;
-        --gold: #facc15;
-        --red: #ef4444;
-        --text: #f8fafc;
-        --muted: #94a3b8;
-        --line: rgba(148, 163, 184, 0.18);
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        background: radial-gradient(circle at top, rgba(250, 204, 21, 0.14), transparent 34%), var(--midnight);
-        color: var(--text);
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-      a { color: inherit; text-decoration: none; }
-      .shell { width: min(430px, 100%); margin: 0 auto; padding: 24px 18px 42px; }
-      .nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 26px; }
-      .kicker { color: var(--gold); letter-spacing: 0.32em; font-size: 11px; font-weight: 900; text-transform: uppercase; }
-      .muted { color: var(--muted); }
-      .card {
-        background: rgba(15, 23, 42, 0.86);
-        border: 1px solid var(--line);
-        border-radius: 28px;
-        padding: 20px;
-        box-shadow: 0 22px 70px rgba(0,0,0,.35);
-      }
-      .hero { position: relative; overflow: hidden; border-color: rgba(250, 204, 21, 0.22); box-shadow: 0 0 70px rgba(250,204,21,.14); }
-      h1 { font-size: 40px; line-height: .98; margin: 12px 0 0; letter-spacing: -0.055em; }
-      h2 { margin: 0; font-size: 20px; }
-      p { line-height: 1.65; }
-      .pill { display:inline-flex; border: 1px solid rgba(250,204,21,.3); color: var(--gold); background: rgba(250,204,21,.09); border-radius: 999px; padding: 7px 11px; font-size: 12px; font-weight: 800; }
-      .buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
-      .btn { display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 18px; padding: 14px 14px; font-weight: 950; cursor: pointer; }
-      .btn.primary { background: var(--gold); color: var(--midnight); box-shadow: 0 14px 30px rgba(250,204,21,.16); }
-      .btn.ghost { background: rgba(15,23,42,.92); border: 1px solid var(--line); color: white; }
-      .radar { position: relative; width: 260px; height: 260px; border-radius: 999px; border: 1px solid rgba(250,204,21,.18); margin: 28px auto; display: grid; place-items:center; background: rgba(15,23,42,.42); overflow: hidden; }
-      .radar:before, .radar:after { content:""; position:absolute; border: 1px solid rgba(250,204,21,.12); border-radius:999px; }
-      .radar:before { width: 190px; height: 190px; }
-      .radar:after { width: 112px; height: 112px; }
-      .sweep { position:absolute; left:50%; top:50%; width:2px; height:50%; transform-origin: top; background: linear-gradient(var(--gold), transparent); animation: sweep 3.5s linear infinite; }
-      .core { z-index: 2; width: 78px; height: 78px; border-radius:999px; display:grid; place-items:center; border: 1px solid rgba(250,204,21,.42); background: rgba(250,204,21,.1); color: var(--gold); font-size: 34px; animation: pulse 2s ease-in-out infinite; }
-      .dot { position:absolute; width:8px; height:8px; border-radius:999px; background: var(--gold); box-shadow: 0 0 18px rgba(250,204,21,.9); }
-      .dot.red { background: var(--red); box-shadow: 0 0 18px rgba(239,68,68,.9); }
-      .dot.cyan { background: #67e8f9; box-shadow: 0 0 18px rgba(103,232,249,.9); }
-      @keyframes sweep { to { transform: rotate(360deg); } }
-      @keyframes pulse { 50% { transform: scale(1.05); opacity: 1; } }
-      .features { display:grid; gap: 12px; margin-top: 26px; }
-      .feature { display:flex; gap: 12px; align-items:flex-start; padding: 16px; border-radius: 22px; background: rgba(15,23,42,.78); border: 1px solid var(--line); }
-      .icon { color: var(--gold); }
-      .grid3 { display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
-      .stat { padding: 14px; border-radius: 22px; background: rgba(15,23,42,.86); border:1px solid var(--line); }
-      .stat strong { display:block; font-size:24px; }
-      .heat { display:grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
-      .cell { aspect-ratio:1; border-radius: 12px; background:#334155; }
-      .cell.h1 { background:#475569; } .cell.h2 { background:#22d3ee; } .cell.h3 { background:var(--gold); box-shadow:0 0 18px rgba(250,204,21,.28); } .cell.h4 { background:var(--red); box-shadow:0 0 18px rgba(239,68,68,.34); }
-      input, select { width:100%; border:1px solid var(--line); background:#0f172a; color:white; border-radius:18px; padding:14px; margin: 8px 0 14px; outline:none; }
-      label { display:block; font-weight: 800; font-size: 14px; }
-      .check { display:flex; gap:10px; color:#cbd5e1; font-size:14px; margin: 10px 0; }
-      .check input { width:auto; margin: 4px 0 0; }
-      .hidden { display:none; }
-      .signal { border:1px solid var(--line); background:rgba(2,6,23,.4); border-radius: 20px; padding: 14px; margin-top:10px; }
-    </style>
-  </head>
-  <body>
-    <div class="shell">
-      <nav class="nav">
-        <div><div class="kicker">Al-Muraqib</div><div class="muted">Social Radar MVP</div></div>
-        <a href="#pricing" class="muted">Pricing</a>
-      </nav>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#020617" />
+  <title>Al-Muraqib - Social Radar</title>
+  <style>
+    :root{--bg:#020617;--panel:#0f172a;--panel2:#111827;--gold:#facc15;--red:#ef4444;--cyan:#67e8f9;--green:#22c55e;--text:#f8fafc;--muted:#94a3b8;--line:rgba(148,163,184,.18);--goldline:rgba(250,204,21,.32)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0%,rgba(250,204,21,.16),transparent 30%),radial-gradient(circle at 80% 10%,rgba(103,232,249,.11),transparent 28%),linear-gradient(180deg,#020617,#050b16 55%,#020617);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;background-image:linear-gradient(rgba(250,204,21,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(250,204,21,.04) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,black,transparent 82%)}a{color:inherit;text-decoration:none}.page{position:relative;z-index:1;width:min(1120px,100%);margin:0 auto;padding:22px 16px 100px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.brand{display:flex;align-items:center;gap:11px}.logo{width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,rgba(250,204,21,.22),rgba(15,23,42,.88));border:1px solid var(--goldline);display:grid;place-items:center;color:var(--gold);font-weight:950;box-shadow:0 0 38px rgba(250,204,21,.12)}.brand b{display:block}.brand span{display:block;color:var(--muted);font-size:12px;margin-top:2px}.launch{font-size:12px;font-weight:900;color:var(--gold);border:1px solid rgba(250,204,21,.24);background:rgba(250,204,21,.08);padding:10px 13px;border-radius:999px}.section{display:none}.section.active{display:block;animation:rise .35s ease both}@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}.grid{display:grid;gap:22px}.hero,.card,.phone{background:rgba(15,23,42,.72);border:1px solid var(--line);border-radius:30px;box-shadow:0 30px 90px rgba(0,0,0,.4);backdrop-filter:blur(18px)}.hero{position:relative;overflow:hidden;border-color:rgba(250,204,21,.25);padding:24px}.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 0%,rgba(250,204,21,.24),transparent 38%),radial-gradient(circle at 85% 20%,rgba(103,232,249,.14),transparent 34%)}.hero>*{position:relative}.badge{display:inline-flex;gap:7px;align-items:center;border:1px solid rgba(250,204,21,.24);background:rgba(250,204,21,.08);color:var(--gold);border-radius:999px;padding:8px 11px;font-size:11px;font-weight:950;letter-spacing:.04em}.badge.cyan{color:var(--cyan);border-color:rgba(103,232,249,.22);background:rgba(103,232,249,.075)}h1{font-size:48px;line-height:.93;letter-spacing:-.07em;margin:18px 0 0;font-weight:980}h2{font-size:23px;margin:0;letter-spacing:-.04em}h3{margin:0;font-size:16px}.lead{color:#cbd5e1;font-size:15px;line-height:1.65;margin:17px 0 0}.muted{color:var(--muted)}.tiny{color:#64748b;font-size:11px}.ctas{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}.btn{border:0;border-radius:18px;min-height:50px;display:inline-flex;align-items:center;justify-content:center;font-weight:950;padding:14px 16px}.primary{background:var(--gold);color:#111827;box-shadow:0 18px 36px rgba(250,204,21,.18)}.ghost{background:rgba(2,6,23,.45);border:1px solid var(--line);color:#fff}.phone{padding:10px;border-color:rgba(250,204,21,.18);background:linear-gradient(145deg,rgba(250,204,21,.15),rgba(15,23,42,.82))}.screen{min-height:520px;border-radius:24px;background:radial-gradient(circle at 50% 22%,rgba(250,204,21,.14),transparent 30%),linear-gradient(180deg,#0f172a,#020617);border:1px solid rgba(148,163,184,.14);padding:18px;overflow:hidden}.status{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:18px}.radar{height:250px;display:grid;place-items:center;position:relative;margin-bottom:16px}.ring{position:absolute;border:1px solid rgba(250,204,21,.13);border-radius:999px}.r1{width:240px;height:240px}.r2{width:176px;height:176px}.r3{width:112px;height:112px}.sweep{position:absolute;left:50%;top:50%;width:2px;height:118px;transform-origin:top;background:linear-gradient(var(--gold),transparent);animation:sweep 3.2s linear infinite}@keyframes sweep{to{transform:rotate(360deg)}}.core{width:76px;height:76px;border-radius:999px;background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.42);color:var(--gold);display:grid;place-items:center;font-size:25px;font-weight:950;box-shadow:0 0 48px rgba(250,204,21,.18);z-index:2}.dot{position:absolute;width:8px;height:8px;border-radius:999px;background:var(--gold);box-shadow:0 0 18px rgba(250,204,21,.9)}.dot.red{background:var(--red);box-shadow:0 0 18px rgba(239,68,68,.85)}.dot.cyan{background:var(--cyan);box-shadow:0 0 18px rgba(103,232,249,.85)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.14);border-radius:19px;padding:12px 10px}.stat b{display:block;font-size:23px}.stat span{font-size:10px;color:var(--muted)}.row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-top:10px;padding:14px;border:1px solid rgba(148,163,184,.14);background:rgba(15,23,42,.55);border-radius:20px}.score{background:rgba(250,204,21,.11);color:var(--gold);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:950}.features{display:grid;gap:10px;margin-top:14px}.feature{display:flex;gap:12px;padding:15px;background:rgba(15,23,42,.62);border:1px solid var(--line);border-radius:24px}.icon{width:38px;height:38px;border-radius:15px;display:grid;place-items:center;background:rgba(250,204,21,.09);border:1px solid rgba(250,204,21,.18);color:var(--gold);font-size:12px;font-weight:950;flex:0 0 auto}.feature p{margin:5px 0 0;color:var(--muted);font-size:13px;line-height:1.55}.title{margin:28px 0 12px}.title p{margin:5px 0 0;color:var(--muted);font-size:13px}.card{padding:18px}.heatmap{display:grid;grid-template-columns:repeat(8,1fr);gap:7px}.heat{aspect-ratio:1;border-radius:10px;background:#1e293b}.h1{background:#334155}.h2{background:rgba(103,232,249,.82);box-shadow:0 0 14px rgba(103,232,249,.2)}.h3{background:var(--gold);box-shadow:0 0 16px rgba(250,204,21,.3)}.h4{background:var(--red);box-shadow:0 0 16px rgba(239,68,68,.32)}.map{height:250px;position:relative;overflow:hidden;background:linear-gradient(rgba(250,204,21,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(250,204,21,.035) 1px,transparent 1px),rgba(2,6,23,.46);background-size:26px 26px;border:1px solid rgba(148,163,184,.14);border-radius:28px}.orbit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid rgba(250,204,21,.13);border-radius:999px}.oa{width:200px;height:200px}.ob{width:136px;height:136px}.oc{width:74px;height:74px}.you{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:999px;background:var(--gold);color:#111827;font-weight:950;display:grid;place-items:center}.node{position:absolute;padding:7px 10px;border-radius:999px;background:rgba(15,23,42,.92);border:1px solid var(--line);font-size:11px;font-weight:900}.gold{color:var(--gold);border-color:rgba(250,204,21,.28)}.red{color:#fca5a5;border-color:rgba(239,68,68,.28)}.cyan{color:var(--cyan);border-color:rgba(103,232,249,.28)}label{display:block;font-weight:850;font-size:13px;margin:14px 0 7px}input,select{width:100%;border:1px solid var(--line);background:rgba(2,6,23,.74);color:#fff;border-radius:18px;padding:14px;outline:0}input:focus,select:focus{border-color:var(--goldline);box-shadow:0 0 0 4px rgba(250,204,21,.08)}.check{display:flex;gap:10px;margin:14px 0;padding:13px;border-radius:18px;border:1px solid rgba(250,204,21,.16);background:rgba(250,204,21,.055);color:#cbd5e1;font-size:12px;line-height:1.45}.check input{width:auto;margin-top:2px}.result{display:none;margin-top:13px;border:1px solid rgba(34,197,94,.22);background:rgba(34,197,94,.08);border-radius:18px;padding:13px;color:#dcfce7;font-size:13px}.result.show{display:block}.pricecard{padding:17px;border-radius:24px;border:1px solid var(--line);background:rgba(15,23,42,.62);margin-top:11px}.price{float:right;color:var(--gold);font-size:23px;font-weight:980}.bottom{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);width:min(408px,calc(100% - 28px));display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px;border:1px solid rgba(148,163,184,.18);border-radius:26px;background:rgba(2,6,23,.84);backdrop-filter:blur(22px);box-shadow:0 22px 70px rgba(0,0,0,.42);z-index:80}.bottom a{text-align:center;padding:10px 7px;border-radius:18px;color:var(--muted);font-size:11px;font-weight:900}.bottom a.active{background:rgba(250,204,21,.12);color:var(--gold)}@media(min-width:860px){.grid{grid-template-columns:1.03fr .82fr;align-items:start}h1{font-size:62px}.features{grid-template-columns:repeat(3,1fr)}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="top"><a class="brand" href="#home"><div class="logo">M</div><div><b>Al-Muraqib</b><span>Social Radar</span></div></a><a class="launch" href="#create">Launch Radar</a></header>
 
-      <section id="home">
-        <div class="card hero">
-          <span class="pill">GCC-first opt-in intelligence</span>
-          <h1>Turn every social link into a live radar.</h1>
-          <p class="muted">Post your private radar link on Snap, Instagram, WhatsApp, or Telegram. See who enters your social orbit using consented signals only.</p>
-          <div class="buttons">
-            <a class="btn primary" href="#create">Create Radar</a>
-            <a class="btn ghost" href="#dashboard">Demo</a>
-          </div>
-        </div>
-        <div class="radar">
-          <div class="sweep"></div><div class="core">⌖</div>
-          <span class="dot" style="left:52px; top:62px"></span>
-          <span class="dot red" style="right:58px; bottom:76px"></span>
-          <span class="dot cyan" style="left:92px; bottom:110px"></span>
-        </div>
-        <div class="features">
-          <div class="feature"><b class="icon">◎</b><div><b>Signal Capture</b><br><span class="muted">Handle, platform, timing, timezone, and basic device metadata after consent.</span></div></div>
-          <div class="feature"><b class="icon">◌</b><div><b>Trust Graph</b><br><span class="muted">Repeat observers, fast reactors, known contacts, and unknown signals.</span></div></div>
-          <div class="feature"><b class="icon">⌁</b><div><b>Legal-first</b><br><span class="muted">No official IG/Snap APIs. No covert tracking. No fake private-list claims.</span></div></div>
-        </div>
-      </section>
+    <section id="home" class="section active"><div class="grid"><div><div class="hero"><span class="badge">SOCIAL RADAR MVP</span> <span class="badge cyan">GCC-FIRST</span><h1>Turn your story link into a premium social radar.</h1><p class="lead">Create a private vibe-check link, post it anywhere, and view a polished dashboard of opt-in engagement, timing, heat, and social orbit patterns.</p><div class="ctas"><a class="btn primary" href="#create">Create Link</a><a class="btn ghost" href="#dashboard">View Demo</a></div><p class="tiny" style="margin-top:14px">Designed for Snap, Instagram, WhatsApp, TikTok, and Telegram sharing.</p></div><div class="title"><h2>Why it feels powerful</h2><p>A productized social game with a premium dashboard instead of a basic anonymous form.</p></div><div class="features"><div class="feature"><div class="icon">01</div><div><h3>Vibe Link</h3><p>Users share one clean link that invites friends into a high-curiosity social check.</p></div></div><div class="feature"><div class="icon">02</div><div><h3>Trust Graph</h3><p>Visualize fast reactors, repeat visitors, known fans, and active social circles.</p></div></div><div class="feature"><div class="icon">03</div><div><h3>Unlocks</h3><p>Report teasers create clear reasons to pay for quick signals and full reports.</p></div></div></div></div><div class="phone"><div class="screen"><div class="status"><span>21:42</span><span>Radar Active</span></div><div class="radar"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="sweep"></div><div class="core">MX</div><span class="dot" style="left:50px;top:58px"></span><span class="dot red" style="right:48px;bottom:72px"></span><span class="dot cyan" style="left:86px;bottom:96px"></span></div><div class="stats"><div class="stat"><b>128</b><span>Signals</span></div><div class="stat"><b>17</b><span>Hot</span></div><div class="stat"><b>6</b><span>Hints</span></div></div><div class="row"><div><b>@noura_82</b><div class="tiny">Repeat visitor - iPhone / Safari</div></div><div class="score">87</div></div><div class="row"><div><b>@unknown</b><div class="tiny">High interest - Android / Chrome</div></div><div class="score">64</div></div></div></div></div></section>
 
-      <section id="create" class="hidden">
-        <div class="card">
-          <div class="kicker">Create Link</div>
-          <h1>Launch your radar.</h1>
-          <p class="muted">Demo mode: generate a shareable local radar path.</p>
-          <label>Custom slug</label>
-          <input id="slug" placeholder="adam-radar" />
-          <button class="btn primary" style="width:100%" onclick="createLink()">Generate Radar Link</button>
-          <div id="created" class="signal hidden"></div>
-        </div>
-      </section>
+    <section id="create" class="section"><div class="hero"><span class="badge">CREATE LINK</span><h1>Launch your radar in seconds.</h1><p class="lead">Generate a demo share link and test the flow instantly.</p></div><div class="card"><label for="slug">Custom radar slug</label><input id="slug" placeholder="adam-radar"/><button class="btn primary" style="width:100%;margin-top:14px" onclick="createRadarLink()">Generate Radar Link</button><div id="created" class="result"></div></div><div class="card"><h2>Story text</h2><p class="muted">Only real ones enter my radar. Tap and pass the vibe check.</p></div></section>
 
-      <section id="vibe" class="hidden">
-        <div class="card">
-          <div class="kicker">Vibe Check</div>
-          <h1>Enter the radar.</h1>
-          <p class="muted">By continuing, your handle, platform, browser/device type, timezone, and coarse region may be shared with the link creator. No exact GPS or private platform data is collected.</p>
-          <label>Your handle</label><input id="handle" placeholder="@yourhandle" />
-          <label>Platform</label><select id="platform"><option>Instagram</option><option>Snapchat</option><option>WhatsApp</option><option>TikTok</option><option>Telegram</option></select>
-          <label class="check"><input type="checkbox" id="consent" /> I agree to share my submitted handle and basic metadata for this vibe check.</label>
-          <button class="btn primary" style="width:100%" onclick="submitVibe()">Run Vibe Check</button>
-          <div id="done" class="signal hidden"></div>
-        </div>
-      </section>
+    <section id="vibe" class="section"><div class="hero"><span class="badge">VIBE CHECK</span><h1>Enter the radar.</h1><p class="lead">Submit your handle and platform to generate a demo social signal.</p></div><div class="card"><label for="handle">Your handle</label><input id="handle" placeholder="@yourhandle"/><label for="platform">Platform</label><select id="platform"><option>Instagram</option><option>Snapchat</option><option>WhatsApp</option><option>TikTok</option><option>Telegram</option></select><label class="check"><input type="checkbox" id="consent"/><span>I agree to share my submitted handle, selected platform, and interaction timing for this vibe check.</span></label><button class="btn primary" style="width:100%" onclick="submitVibeCheck()">Run Vibe Check</button><div id="vibeResult" class="result"></div></div></section>
 
-      <section id="dashboard" class="hidden">
-        <div class="card hero"><div class="kicker">Social Radar</div><h1>Scanning active signals.</h1><p class="muted">Demo dashboard with the final visual direction.</p></div>
-        <div class="grid3"><div class="stat"><strong>128</strong><span class="muted">Signals</span></div><div class="stat"><strong>17</strong><span class="muted">High Interest</span></div><div class="stat"><strong>6</strong><span class="muted">Hints</span></div></div>
-        <div class="card"><h2>Thermal Activity</h2><p class="muted">Peak observer windows by hour.</p><div class="heat" id="heat"></div></div>
-        <div class="card" style="margin-top:14px"><h2>Latest Signals</h2><div class="signal"><b>@noura_82</b><br><span class="muted">Snapchat · Repeat Observer · iPhone / Safari · Asia/Riyadh</span></div><div class="signal"><b>@unknown_signal</b><br><span class="muted">Instagram · High Interest · Android / Chrome · Asia/Kuwait</span></div></div>
-      </section>
+    <section id="dashboard" class="section"><div class="hero"><span class="badge">DEMO DASHBOARD</span><h1>Social intelligence, made visual.</h1><p class="lead">This is the upgraded premium direction: mobile-first, dark, cyber-gold, and built around unlockable reports.</p></div><div class="card"><div class="stats"><div class="stat"><b>128</b><span>Signals</span></div><div class="stat"><b>17</b><span>Hot</span></div><div class="stat"><b>6</b><span>Hints</span></div></div></div><div class="title"><h2>Thermal Activity</h2><p>Peak windows by hour.</p></div><div class="card"><div id="heatmap" class="heatmap"></div></div><div class="title"><h2>Trust Graph</h2><p>Social orbit map based on opt-in activity.</p></div><div class="map"><div class="orbit oa"></div><div class="orbit ob"></div><div class="orbit oc"></div><div class="you">YOU</div><div class="node gold" style="left:22px;top:46px">Known</div><div class="node red" style="right:18px;top:68px">Repeat</div><div class="node cyan" style="left:38px;bottom:46px">Fast</div><div class="node" style="right:30px;bottom:34px">New</div></div><div class="card"><h2>Latest Signals</h2><div class="row"><div><b>@noura_82</b><div class="tiny">Snapchat - Repeat - Riyadh window</div></div><div class="score">87/100</div></div><div class="row"><div><b>@unknown</b><div class="tiny">Instagram - High interest - Kuwait window</div></div><div class="score">64/100</div></div></div></section>
 
-      <section id="pricing" class="hidden">
-        <div class="card"><div class="kicker">Unlocks</div><h1>Monetization ladder.</h1><p class="muted">Use Stripe Payment Links after validation.</p></div>
-        <div class="features"><div class="feature"><div><b>$1.99 — Quick Signal</b><br><span class="muted">One consent-based identity hint.</span></div></div><div class="feature"><div><b>$4.99 — Full Radar Report</b><br><span class="muted">Timing, repeat visits, trust graph position.</span></div></div><div class="feature"><div><b>$9.99 — 24h Radar Boost</b><br><span class="muted">Unlimited report unlocks for one launch window.</span></div></div></div>
-      </section>
-    </div>
-
-    <script>
-      function route() {
-        const path = location.pathname.toLowerCase();
-        const hash = location.hash || '#home';
-        const current = path.includes('/r/') ? 'vibe' : hash.replace('#', '') || 'home';
-        ['home','create','vibe','dashboard','pricing'].forEach(id => document.getElementById(id).classList.toggle('hidden', id !== current));
-        drawHeat();
-      }
-      function createLink() {
-        const raw = document.getElementById('slug').value || 'demo-radar';
-        const slug = raw.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '') || 'demo-radar';
-        const base = location.origin + location.pathname.replace(/index.html$/, '').replace(/\/$/, '');
-        const url = base + '/r/' + slug;
-        const box = document.getElementById('created');
-        box.classList.remove('hidden');
-        box.innerHTML = '<b>Your demo link:</b><br><span class="muted">' + url + '</span>';
-      }
-      function submitVibe() {
-        const consent = document.getElementById('consent').checked;
-        const handle = document.getElementById('handle').value.trim();
-        const box = document.getElementById('done');
-        box.classList.remove('hidden');
-        if (!consent || !handle) { box.innerHTML = '<b>Please add handle and consent first.</b>'; return; }
-        box.innerHTML = '<b>Signal captured.</b><br><span class="muted">Demo mode only. Connect Supabase to save real interactions.</span>';
-      }
-      function drawHeat() {
-        const heat = document.getElementById('heat');
-        if (!heat || heat.children.length) return;
-        const vals = [1,1,2,3,1,1,0,0,1,2,3,3,3,4,3,2,2,1,3,4,4,3,2,1];
-        vals.forEach(v => { const d = document.createElement('div'); d.className = 'cell h' + v; heat.appendChild(d); });
-      }
-      addEventListener('hashchange', route);
-      route();
-    </script>
-  </body>
+    <section id="pricing" class="section"><div class="hero"><span class="badge">UNLOCKS</span><h1>Simple paid reports.</h1><p class="lead">Start with payment links. Add automated payments after validation.</p></div><div class="pricecard"><span class="price">$1.99</span><h3>Quick Signal</h3><p class="muted">One premium signal preview.</p></div><div class="pricecard"><span class="price">$4.99</span><h3>Full Radar Report</h3><p class="muted">Timing, activity pattern, and dashboard report.</p></div><div class="pricecard"><span class="price">$9.99</span><h3>24h Radar Boost</h3><p class="muted">Best for a one-day story campaign.</p></div></section>
+  </main>
+  <nav class="bottom"><a href="#home" data-tab="home">Radar</a><a href="#create" data-tab="create">Create</a><a href="#dashboard" data-tab="dashboard">Intel</a><a href="#pricing" data-tab="pricing">Unlock</a></nav>
+  <script>
+    function view(){return location.pathname.toLowerCase().includes('/r/')?'vibe':(location.hash||'#home').replace('#','')||'home'}
+    function route(){var v=view();document.querySelectorAll('.section').forEach(function(s){s.classList.toggle('active',s.id===v)});document.querySelectorAll('.bottom a').forEach(function(a){a.classList.toggle('active',a.dataset.tab===v)});drawHeatmap()}
+    function createRadarLink(){var raw=document.getElementById('slug').value||'demo-radar';var slug=raw.toLowerCase().replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'')||'demo-radar';var base=location.origin+location.pathname.split('/r/')[0].replace(/\/$/,'');var url=base+'/r/'+slug;var box=document.getElementById('created');box.classList.add('show');box.innerHTML='<b>Your demo link is ready</b><br><span style="word-break:break-all;color:#cbd5e1">'+url+'</span>'}
+    function submitVibeCheck(){var consent=document.getElementById('consent').checked;var handle=document.getElementById('handle').value.trim();var platform=document.getElementById('platform').value;var box=document.getElementById('vibeResult');box.classList.add('show');if(!consent||!handle){box.style.borderColor='rgba(239,68,68,.28)';box.style.background='rgba(239,68,68,.08)';box.innerHTML='<b>Add your handle and consent first.</b>';return}box.style.borderColor='rgba(34,197,94,.22)';box.style.background='rgba(34,197,94,.08)';box.innerHTML='<b>Signal captured</b><br><span style="color:#cbd5e1">@'+handle.replace(/^@/,'')+' - '+platform+'</span>'}
+    function drawHeatmap(){var h=document.getElementById('heatmap');if(!h||h.children.length)return;[1,1,2,3,1,1,0,0,1,2,3,3,3,4,3,2,2,1,3,4,4,3,2,1].forEach(function(v){var c=document.createElement('div');c.className='heat h'+v;h.appendChild(c)})}
+    addEventListener('hashchange',route);route();
+  </script>
+</body>
 </html>

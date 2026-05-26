@@ -61,11 +61,22 @@ export type GiftType = {
   points: number;
   amountCents: number;
   description: string;
+  stripeEnvKey: string;
 };
 
 export const giftTypes: GiftType[] = [
-  { id: 'rose', label: 'Rose Entry', points: 50, amountCents: 99, description: 'A soft signal to enter her Circle.' },
-  { id: 'golden', label: 'Golden Entry', points: 150, amountCents: 199, description: 'Stand out in the Golden Inbox.' },
-  { id: 'diamond', label: 'Diamond Entry', points: 700, amountCents: 499, description: 'Push hard toward Top 3.' },
-  { id: 'crown', label: 'Crown Entry', points: 1600, amountCents: 999, description: 'Challenge Crown Holder status.' },
+  { id: 'rose', label: 'Rose Entry', points: 50, amountCents: 99, stripeEnvKey: 'VITE_STRIPE_LINK_ROSE_ENTRY', description: 'A paid soft signal to enter her Circle.' },
+  { id: 'golden', label: 'Golden Entry', points: 150, amountCents: 199, stripeEnvKey: 'VITE_STRIPE_LINK_GOLDEN_ENTRY', description: 'A paid entry that stands out in the Golden Inbox.' },
+  { id: 'diamond', label: 'Diamond Entry', points: 700, amountCents: 499, stripeEnvKey: 'VITE_STRIPE_LINK_DIAMOND_ENTRY', description: 'A paid push toward Top 3.' },
+  { id: 'crown', label: 'Crown Entry', points: 1600, amountCents: 999, stripeEnvKey: 'VITE_STRIPE_LINK_CROWN_ENTRY', description: 'A paid challenge for Crown Holder status.' },
 ];
+
+export function getGiftCheckoutLink(giftId: string) {
+  const gift = giftTypes.find((item) => item.id === giftId);
+  if (!gift) return '';
+  return (import.meta.env[gift.stripeEnvKey] as string | undefined) || '';
+}
+
+export function hasGiftCheckoutLink(giftId: string) {
+  return Boolean(getGiftCheckoutLink(giftId));
+}

@@ -6,6 +6,7 @@ import { LandingPage } from './pages/LandingPage';
 import { PricingPage } from './pages/PricingPage';
 import { PublicVibeCheckPage } from './pages/PublicVibeCheckPage';
 import { QueenLeaderboardPage } from './pages/QueenLeaderboardPage';
+import { ViralVerdictPage } from './pages/ViralVerdictPage';
 
 export function App() {
   return (
@@ -15,6 +16,9 @@ export function App() {
       <Route path="/create-link" element={<CreateLinkPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/boost" element={<PricingPage />} />
+      <Route path="/verdict" element={<ViralVerdictPage />} />
+      <Route path="/council" element={<DashboardPage />} />
       <Route path="/queens" element={<QueenLeaderboardPage />} />
       <Route path="/kings" element={<KingLeaderboardPage />} />
       <Route path="/circle/:slug" element={<PublicVibeCheckPage />} />

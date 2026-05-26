@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Crown, Gift, ShieldCheck, Trophy } from 'lucide-react';
+import { Crown, Gift, ShieldCheck } from 'lucide-react';
+import { CrownCouncilLeaderboard } from '../components/CrownCouncilLeaderboard';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { fetchCircleBySlug, fetchLeaderboard, formatMoney, joinCircle, type LeaderboardEntry } from '../lib/daira';
@@ -78,6 +79,15 @@ export function PublicVibeCheckPage() {
     return <main className="grid min-h-screen place-items-center bg-midnight px-5 text-white"><Card>{error || 'Circle not found.'}</Card></main>;
   }
 
+  const councilMembers = leaderboard.map((entry, index) => ({
+    rank: index + 1,
+    handle: entry.supporter_handle,
+    platform: entry.platform,
+    points: entry.points,
+    message: entry.message,
+    gift: index === 0 ? 'Crown Entry' : index === 1 ? 'Diamond Entry' : index === 2 ? 'Golden Entry' : 'Rose Entry',
+  }));
+
   return (
     <main className="min-h-screen bg-midnight px-5 py-8 text-white">
       <div className="mx-auto max-w-md">
@@ -94,36 +104,19 @@ export function PublicVibeCheckPage() {
                 {context.creator.display_name.slice(0, 1)}
               </div>
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.24em] text-cyberGold">Live Circle</p>
+                <p className="text-xs font-black uppercase tracking-[0.24em] text-cyberGold">Live Social Radar</p>
                 <h1 className="text-2xl font-black tracking-tight">{context.circle.title}</h1>
-                <p className="text-sm text-slate-400">{context.creator.city || 'GCC'} · Top 3 rewards active</p>
+                <p className="text-sm text-slate-400">{context.creator.city || 'GCC'} · Crown Council active</p>
               </div>
             </div>
-            <p className="text-sm leading-6 text-slate-300">Join the Circle, send a real paid gift, and compete for Crown Holder status.</p>
+            <p className="text-sm leading-6 text-slate-300">Join the Social Radar, send a real paid gift, and compete for Crown Council status.</p>
             {!hasSupabaseConfig && <p className="mt-3 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 p-3 text-xs leading-5 text-yellow-100">Supabase is not connected yet. Connect Supabase before accepting real gifts.</p>}
           </div>
         </Card>
 
-        <Card className="mb-5 border-yellow-400/10">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-black">Current Top 3</h2>
-            <Trophy className="h-5 w-5 text-cyberGold" />
-          </div>
-          <div className="space-y-3">
-            {leaderboard.slice(0, 3).map((entry, index) => (
-              <div key={entry.id} className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-900/70 p-3">
-                <div className="flex items-center gap-3">
-                  <div className="grid h-9 w-9 place-items-center rounded-xl bg-cyberGold text-sm font-black text-midnight">{index + 1}</div>
-                  <div>
-                    <p className="font-black">{entry.supporter_handle}</p>
-                    <p className="text-xs text-slate-500">{entry.platform}</p>
-                  </div>
-                </div>
-                <p className="rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-black text-cyberGold">{entry.points}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
+        <div className="mb-5">
+          <CrownCouncilLeaderboard queenName={context.creator.display_name} members={councilMembers} showActions={false} />
+        </div>
 
         <Card className="mb-5 border-purple-400/10">
           <h2 className="mb-3 flex items-center gap-2 font-black"><Crown className="h-5 w-5 text-cyberGold" /> Top 3 rewards</h2>
@@ -191,7 +184,7 @@ export function PublicVibeCheckPage() {
 
         <Card className="mt-5 flex gap-3 border-emerald-400/10 bg-emerald-400/5 text-sm leading-6 text-emerald-50">
           <ShieldCheck className="mt-1 h-5 w-5 shrink-0 text-emerald-300" />
-          Daira rewards stay inside the app. Do not request phone numbers, private Snap, adult content, meetups, or off-platform access.
+          Rewards stay inside the app. No phone numbers, private Snap, adult content, meetups, or off-platform access.
         </Card>
       </div>
     </main>

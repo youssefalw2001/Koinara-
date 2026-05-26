@@ -1,4 +1,4 @@
-import { giftTypes, hasSupabaseConfig, supabase } from './supabase';
+import { getGiftCheckoutLink, giftTypes, supabase } from './supabase';
 
 export type CreateCircleInput = {
   creatorName: string;
@@ -172,6 +172,8 @@ export async function fetchLeaderboard(circleId: string): Promise<LeaderboardEnt
     .from('entries')
     .select('*')
     .eq('circle_id', circleId)
+    .eq('status', 'active')
+    .gt('points', 0)
     .order('points', { ascending: false })
     .order('created_at', { ascending: true });
 
@@ -181,7 +183,12 @@ export async function fetchLeaderboard(circleId: string): Promise<LeaderboardEnt
 
 export async function joinCircle(input: JoinCircleInput) {
   const gift = giftTypes.find((item) => item.id === input.giftId) || giftTypes[0];
+  const checkoutUrl = getGiftCheckoutLink(gift.id);
   const handle = input.handle.trim().startsWith('@') ? input.handle.trim() : `@${input.handle.trim()}`;
+
+  if (!checkoutUrl) {
+    throw new Error(`Stripe Payment Link missing for ${gift.label}. Add ${gift.stripeEnvKey} to your environment.`);
+  }
 
   if (!supabase) {
     return {
@@ -191,10 +198,11 @@ export async function joinCircle(input: JoinCircleInput) {
         supporter_handle: handle,
         platform: input.platform,
         message: input.message || null,
-        points: gift.points,
+        points: 0,
         created_at: new Date().toISOString(),
       },
       gift,
+      checkoutUrl,
       configured: false,
     };
   }
@@ -206,7 +214,7 @@ export async function joinCircle(input: JoinCircleInput) {
       supporter_handle: handle,
       platform: input.platform,
       message: input.message || null,
-      points: gift.points,
+      points: 0,
     })
     .select('*')
     .single();
@@ -223,5 +231,5 @@ export async function joinCircle(input: JoinCircleInput) {
   });
 
   if (giftError) throw giftError;
-  return { entry, gift, configured: true };
+  return { entry, gift, checkoutUrl, configured: true };
 }

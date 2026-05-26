@@ -4,7 +4,7 @@ import { Crown, Gift, ShieldCheck, Trophy } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { fetchCircleBySlug, fetchLeaderboard, formatMoney, joinCircle, type LeaderboardEntry } from '../lib/daira';
-import { giftTypes, hasSupabaseConfig } from '../lib/supabase';
+import { giftTypes, hasSupabaseConfig, hasGiftCheckoutLink } from '../lib/supabase';
 
 type CircleContext = Awaited<ReturnType<typeof fetchCircleBySlug>>;
 
@@ -22,6 +22,7 @@ export function PublicVibeCheckPage() {
   const [error, setError] = useState('');
 
   const selectedGift = useMemo(() => giftTypes.find((gift) => gift.id === giftId) || giftTypes[0], [giftId]);
+  const selectedGiftHasCheckout = hasGiftCheckoutLink(selectedGift.id);
 
   useEffect(() => {
     let active = true;
@@ -55,15 +56,15 @@ export function PublicVibeCheckPage() {
     try {
       setSubmitting(true);
       setError('');
+      setResult('Preparing secure checkout...');
       const response = await joinCircle({ circleId: context.circle.id, handle, platform, message, giftId });
-      const updated = await fetchLeaderboard(context.circle.id);
-      const merged = response.configured ? updated : [response.entry as LeaderboardEntry, ...updated];
-      const sorted = merged.sort((a, b) => b.points - a.points);
-      const rank = sorted.findIndex((entry) => entry.id === response.entry.id) + 1;
-      setLeaderboard(sorted);
-      setResult(`${response.gift.label} submitted. You are currently #${rank || sorted.length} in ${context.creator.display_name}'s Circle.`);
+      if (response.checkoutUrl) {
+        window.location.href = response.checkoutUrl;
+        return;
+      }
+      setResult('Checkout could not be opened. Check Stripe gift link setup.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not submit entry.');
+      setError(err instanceof Error ? err.message : 'Could not open checkout.');
     } finally {
       setSubmitting(false);
     }
@@ -98,8 +99,8 @@ export function PublicVibeCheckPage() {
                 <p className="text-sm text-slate-400">{context.creator.city || 'GCC'} · Top 3 rewards active</p>
               </div>
             </div>
-            <p className="text-sm leading-6 text-slate-300">Join the Circle, send a Golden Entry, and compete for Crown Holder status.</p>
-            {!hasSupabaseConfig && <p className="mt-3 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 p-3 text-xs leading-5 text-yellow-100">Supabase is not connected yet, so this page is running in local preview mode until env keys are added.</p>}
+            <p className="text-sm leading-6 text-slate-300">Join the Circle, send a real paid gift, and compete for Crown Holder status.</p>
+            {!hasSupabaseConfig && <p className="mt-3 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 p-3 text-xs leading-5 text-yellow-100">Supabase is not connected yet. Connect Supabase before accepting real gifts.</p>}
           </div>
         </Card>
 
@@ -135,7 +136,7 @@ export function PublicVibeCheckPage() {
 
         <form onSubmit={submit}>
           <Card className="border-yellow-400/20">
-            <h2 className="mb-4 flex items-center gap-2 text-xl font-black"><Gift className="h-5 w-5 text-cyberGold" /> Send your entry</h2>
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-black"><Gift className="h-5 w-5 text-cyberGold" /> Send a real gift</h2>
             <label className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-400">Handle</label>
             <input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="@yourhandle" className="mb-4 w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 outline-none placeholder:text-slate-500 focus:ring-4 focus:ring-yellow-400/20" />
 
@@ -165,7 +166,7 @@ export function PublicVibeCheckPage() {
                       <p className="mt-1 text-xs leading-5 text-slate-400">{gift.description}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-black text-cyberGold">{gift.points}</p>
+                      <p className="font-black text-cyberGold">{gift.points} pts</p>
                       <p className="text-xs text-slate-500">{formatMoney(gift.amountCents)}</p>
                     </div>
                   </div>
@@ -173,14 +174,20 @@ export function PublicVibeCheckPage() {
               ))}
             </div>
 
-            <Button type="submit" disabled={submitting} className="w-full">
-              {submitting ? 'Submitting...' : `Send ${selectedGift.label}`}
+            {!selectedGiftHasCheckout && (
+              <div className="mb-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 p-3 text-xs leading-5 text-yellow-100">
+                Stripe Payment Link missing for {selectedGift.label}. Add its URL to your env before launch.
+              </div>
+            )}
+
+            <Button type="submit" disabled={submitting || !selectedGiftHasCheckout || !hasSupabaseConfig} className="w-full">
+              {submitting ? 'Opening checkout...' : `Pay ${formatMoney(selectedGift.amountCents)} · Send ${selectedGift.label}`}
             </Button>
           </Card>
         </form>
 
         {error && <Card className="mt-5 border-red-400/20 bg-red-950/30 text-sm text-red-100">{error}</Card>}
-        {result && <Card className="mt-5 border-emerald-400/20 bg-emerald-400/5 text-sm leading-6 text-emerald-50">{result}<Link to="/dashboard" className="mt-3 block font-black text-cyberGold">View Circle dashboard</Link></Card>}
+        {result && <Card className="mt-5 border-emerald-400/20 bg-emerald-400/5 text-sm leading-6 text-emerald-50">{result}</Card>}
 
         <Card className="mt-5 flex gap-3 border-emerald-400/10 bg-emerald-400/5 text-sm leading-6 text-emerald-50">
           <ShieldCheck className="mt-1 h-5 w-5 shrink-0 text-emerald-300" />

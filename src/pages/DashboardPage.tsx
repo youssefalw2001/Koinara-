@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Crown, Gift, Inbox, ShieldCheck, Sparkles, Swords, Trophy, Users } from 'lucide-react';
+import { Crown, Gift, ShieldCheck, Sparkles, Swords, Trophy, Users } from 'lucide-react';
+import { CrownCouncilLeaderboard } from '../components/CrownCouncilLeaderboard';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 
@@ -68,29 +69,14 @@ export function DashboardPage() {
           })}
         </section>
 
-        <Card className="mb-5 border-yellow-400/10">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-black"><Trophy className="h-5 w-5 text-cyberGold" /> Crown Council</h2>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Top 3 win</p>
-          </div>
-          <div className="space-y-3">
-            {leaderboard.map((entry) => (
-              <div key={entry.handle} className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`grid h-10 w-10 place-items-center rounded-xl text-sm font-black ${entry.rank <= 3 ? 'bg-cyberGold text-midnight' : 'bg-slate-800 text-slate-300'}`}>{entry.rank}</div>
-                    <div>
-                      <p className="font-black">{entry.handle}</p>
-                      <p className="text-xs text-slate-500">{entry.title} · {entry.gift} · {entry.platform}</p>
-                    </div>
-                  </div>
-                  <p className="rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-black text-cyberGold">{entry.points}</p>
-                </div>
-                <p className="mt-3 rounded-2xl bg-slate-950/70 p-3 text-sm text-slate-300">“{entry.message}”</p>
-              </div>
-            ))}
-          </div>
-        </Card>
+        <div className="mb-5">
+          <CrownCouncilLeaderboard
+            queenName="Queen Noura"
+            members={leaderboard}
+            onBoost={() => undefined}
+            onInvite={() => undefined}
+          />
+        </div>
 
         <Card className="mb-5 border-purple-400/20 bg-purple-400/5">
           <h2 className="mb-4 flex items-center gap-2 text-lg font-black"><Swords className="h-5 w-5 text-purple-300" /> Royal Invite Board</h2>
